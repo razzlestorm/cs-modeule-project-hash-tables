@@ -62,12 +62,13 @@ class HashTable:
 
     return hash 
         """
-        '''offset_basis = 14695981039346656037
+        offset_basis = 14695981039346656037
         prime_value = 1099511628211
-        hashkey = 0
-        for byte in key.encode()
-            hashkey
-        # Your code here'''
+        hashkey = offset_basis
+        for byte in key.encode():
+            hashkey *= prime_value
+            hashkey = hashkey ^ byte
+        return hashkey
 
 
     def djb2(self, key):
@@ -87,8 +88,8 @@ class HashTable:
         Take an arbitrary key and return a valid integer index
         between within the storage capacity of the hash table.
         """
-        #return self.fnv1(key) % self.capacity
-        return self.djb2(key) % self.capacity
+        return self.fnv1(key) % self.capacity
+        #return self.djb2(key) % self.capacity
 
     def put(self, key, value):
         """
