@@ -21,8 +21,8 @@ class HashTable:
     """
 
     def __init__(self, capacity):
-        # Your code here
-
+        self.capacity = capacity
+        self.slots = [None] * self.capacity
 
     def get_num_slots(self):
         """
@@ -34,7 +34,7 @@ class HashTable:
 
         Implement this.
         """
-        # Your code here
+        return len(self.slots)
 
 
     def get_load_factor(self):
@@ -44,6 +44,7 @@ class HashTable:
         Implement this.
         """
         # Your code here
+        pass
 
 
     def fnv1(self, key):
@@ -51,9 +52,22 @@ class HashTable:
         FNV-1 Hash, 64-bit
 
         Implement this, and/or DJB2.
-        """
 
-        # Your code here
+        algorithm fnv-1 is
+    hash := FNV_offset_basis do
+
+    for each byte_of_data to be hashed
+        hash := hash × FNV_prime
+        hash := hash XOR byte_of_data
+
+    return hash 
+        """
+        '''offset_basis = 14695981039346656037
+        prime_value = 1099511628211
+        hashkey = 0
+        for byte in key.encode()
+            hashkey
+        # Your code here'''
 
 
     def djb2(self, key):
@@ -62,7 +76,10 @@ class HashTable:
 
         Implement this, and/or FNV-1.
         """
-        # Your code here
+        hashkey = 5381
+        for char in key.encode():
+            hashkey = ((hashkey << 5) + hashkey) + char
+        return hashkey
 
 
     def hash_index(self, key):
@@ -81,7 +98,8 @@ class HashTable:
 
         Implement this.
         """
-        # Your code here
+        self.slots[self.hash_index(key)] = value
+        return self.capacity
 
 
     def delete(self, key):
@@ -93,6 +111,10 @@ class HashTable:
         Implement this.
         """
         # Your code here
+        try:
+            self.slots[self.hash_index(key)] = None
+        except IndexError as e:
+            "WARNING: That key wasn't found."
 
 
     def get(self, key):
@@ -104,6 +126,10 @@ class HashTable:
         Implement this.
         """
         # Your code here
+        try:
+            return self.slots[self.hash_index(key)]
+        except IndexError as e:
+            return None
 
 
     def resize(self, new_capacity):
