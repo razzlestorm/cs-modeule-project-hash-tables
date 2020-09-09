@@ -23,6 +23,7 @@ class HashTable:
     def __init__(self, capacity):
         self.capacity = capacity
         self.slots = [None] * self.capacity
+        self.length = len(self.slots)
 
     def get_num_slots(self):
         """
@@ -99,8 +100,24 @@ class HashTable:
 
         Implement this.
         """
-        self.slots[self.hash_index(key)] = value
-        return self.capacity
+        # Check if key already in hashtable
+        if self.slots[self.hash_index(key)]:
+            cur_node = self.slots[self.hash_index(key)]
+            # Traverse through HashTableEntries at that key
+            while cur_node is not None:
+                if cur_node.key == key:
+                    cur_node.value = value
+                    return
+                
+                cur_node = self.slots[self.hash_index(key)].next
+            # Use cur_node.next to point to key/value pair
+            old_head = self.slots[self.hash_index(key)]
+            new_head = HashTableEntry(key, value)
+            new_head.next = old_head
+            self.slots[self.hash_index(key)] = new_head
+
+        else:
+            self.slots[self.hash_index(key)] = HashTableEntry(key, value)
 
 
     def delete(self, key):
@@ -113,7 +130,20 @@ class HashTable:
         """
         # Your code here
         try:
-            self.slots[self.hash_index(key)] = None
+            cur_node = self.slots[self.hash_index(key)]
+            if cur_node.key == key:
+                self.slots[self.hash_index(key)] = cur_node.next
+                self.length -= 1
+                return
+            prev = cur_node
+            cur_node = cur_node.next
+            while cur_node is not None:
+                if cur_node.key == key:
+                    prev.next = cur_node.next
+                    self.length -= 1
+                    break
+                prev = cur_node
+                cur_node = cur_node.next
         except IndexError as e:
             "WARNING: That key wasn't found."
 
@@ -126,11 +156,14 @@ class HashTable:
 
         Implement this.
         """
-        # Your code here
-        try:
-            return self.slots[self.hash_index(key)]
-        except IndexError as e:
-            return None
+
+        cur_node = self.slots[self.hash_index(key)]
+        while cur_node is not None:
+            if cur_node.key == key:
+                return cur_node.value
+            cur_node = cur_node.next
+        
+        return None
 
 
     def resize(self, new_capacity):
