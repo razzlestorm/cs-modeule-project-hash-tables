@@ -1,6 +1,12 @@
-def no_dups(s):
-    # Your code here
+from collections import Counter
 
+def no_dups(s):
+    string = ''
+    c = Counter(s.split())
+    for x in c.keys():
+        string += x
+        string += ' '
+    return string.strip()
 
 
 if __name__ == "__main__":
