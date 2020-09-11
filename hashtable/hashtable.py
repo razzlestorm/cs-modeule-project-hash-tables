@@ -23,7 +23,7 @@ class HashTable:
     def __init__(self, capacity):
         self.capacity = capacity
         self.slots = [None] * self.capacity
-        self.length = len(self.slots)
+        self.value_length = 0
 
     def get_num_slots(self):
         """
@@ -44,8 +44,7 @@ class HashTable:
 
         Implement this.
         """
-        # Your code here
-        pass
+        return self.value_length / self.capacity
 
 
     def fnv1(self, key):
@@ -100,6 +99,7 @@ class HashTable:
 
         Implement this.
         """
+
         # Check if key already in hashtable
         if self.slots[self.hash_index(key)]:
             cur_node = self.slots[self.hash_index(key)]
@@ -107,6 +107,7 @@ class HashTable:
             while cur_node is not None:
                 if cur_node.key == key:
                     cur_node.value = value
+                    self.value_length += 1
                     return
                 
                 cur_node = self.slots[self.hash_index(key)].next
@@ -114,10 +115,17 @@ class HashTable:
             old_head = self.slots[self.hash_index(key)]
             new_head = HashTableEntry(key, value)
             new_head.next = old_head
-            self.slots[self.hash_index(key)] = new_head
+            self.slots[self.hash_index(key)] = new_head 
 
         else:
             self.slots[self.hash_index(key)] = HashTableEntry(key, value)
+            self.value_length += 1
+        
+        if self.get_load_factor() >= 0.7:
+            self.resize(self.get_num_slots()*2)   
+
+
+
 
 
     def delete(self, key):
@@ -128,19 +136,18 @@ class HashTable:
 
         Implement this.
         """
-        # Your code here
         try:
             cur_node = self.slots[self.hash_index(key)]
             if cur_node.key == key:
                 self.slots[self.hash_index(key)] = cur_node.next
-                self.length -= 1
+                self.value_length -= 1
                 return
             prev = cur_node
             cur_node = cur_node.next
             while cur_node is not None:
                 if cur_node.key == key:
                     prev.next = cur_node.next
-                    self.length -= 1
+                    self.value_length -= 1
                     break
                 prev = cur_node
                 cur_node = cur_node.next
@@ -173,7 +180,18 @@ class HashTable:
 
         Implement this.
         """
-        # Your code here
+        temp = []
+        for item in self.slots:
+            if item is not None:
+                temp.append((item.key, item.value))
+            else:
+                pass
+        self.slots = [None] * new_capacity
+        self.capacity = self.get_num_slots()
+        for ii in temp:
+            self.put(ii[0], ii[1])
+        
+        
 
 
 
